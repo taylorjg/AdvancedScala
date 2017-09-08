@@ -1,9 +1,9 @@
 package Chapter1
 
 import cats.Show
+import cats.syntax.show._
 import cats.instances.string._
 import cats.instances.int._
-import cats.syntax.show._
 
 object ShowApp extends App {
 
