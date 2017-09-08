@@ -1,15 +1,15 @@
 package Chapter1
 
-object Printable {
-  def main(args: Array[String]): Unit = {
-    import PrintableInstances._
-    import PrintableSyntax._
-    Printable.print("Hello")
-    Printable.print(42)
-    val erik = Cat("Erik", 21, "smokey-grey tabby")
-    Printable.print(erik)
-    erik.print
-  }
+object PrintableApp extends App {
+
+  import PrintableInstances._
+  import PrintableSyntax._
+
+  Printable.print("Hello")
+  Printable.print(42)
+  val erik = Cat("Erik", 21, "smokey-grey tabby")
+  Printable.print(erik)
+  erik.print
 
   trait Printable[A] {
     def format(value: A): String
