@@ -15,9 +15,7 @@ object AllSet extends App {
   }
 
   {
-    val m = MonoidInstances.setIntersectMonoid
-    println(s"List(1, 2, 3, 4): ${m.combine(s1, m.empty).toList.sorted}")
-    println(s"List(1, 2, 3, 4): ${m.combine(m.empty, s1).toList.sorted}")
+    val m = SemigroupInstances.setIntersectSemigroup
     println(s"List(3, 4): ${m.combine(s1, s2).toList.sorted}")
     println(s"List(4): ${m.combine(s3, m.combine(s1, s2)).toList.sorted}")
   }
@@ -35,15 +33,14 @@ object AllSet extends App {
       monoid
   }
 
-  object MonoidInstances {
+  object SemigroupInstances {
+    implicit val setIntersectSemigroup: Semigroup[Set[Int]] =
+      (x: Set[Int], y: Set[Int]) => x intersect y
+  }
 
+  object MonoidInstances {
     implicit val setUnionMonoid: Monoid[Set[Int]] = new Monoid[Set[Int]] {
       override def combine(x: Set[Int], y: Set[Int]): Set[Int] = x union y
-      override def empty: Set[Int] = Set.empty
-    }
-
-    implicit val setIntersectMonoid: Monoid[Set[Int]] = new Monoid[Set[Int]] {
-      override def combine(x: Set[Int], y: Set[Int]): Set[Int] = x intersect y
       override def empty: Set[Int] = Set.empty
     }
   }
