@@ -32,13 +32,7 @@ object BoxContramap extends App {
   final case class Box[A](value: A)
 
   object Box {
-
-    import PrintableInstances._
-
-    implicit val boxStringPrintable: Printable[Box[String]] =
-      stringPrintable.contramap[Box[String]](_.value)
-
-    implicit val boxBooleanPrintable: Printable[Box[Boolean]] =
-      booleanPrintable.contramap[Box[Boolean]](_.value)
+    implicit def boxPrintable[A: Printable](implicit p: Printable[A]): Printable[Box[A]] =
+      p contramap (_.value)
   }
 }
