@@ -5,12 +5,13 @@ import cats.Functor
 object BranchingOut extends App {
 
   import FunctorInstances._
+  import FunctorSyntax._
 
   val tree1 = Branch(
     Branch(Leaf(1), Leaf(2)),
     Branch(Leaf(3), Leaf(4))
   )
-  val tree2 = treeFunctor.map(tree1)(n => n * 2)
+  val tree2 = tree1.map(n => n * 2)
   println(s"tree2: $tree2")
 
   sealed trait Tree[+A]
@@ -26,6 +27,13 @@ object BranchingOut extends App {
           case Leaf(v) => Leaf(func(v))
           case Branch(l, r) => Branch(map(l)(func), map(r)(func))
         }
+    }
+  }
+
+  object FunctorSyntax {
+    implicit class FunctorOps[A](tree: Tree[A]) {
+      def map[B](func: A => B)(implicit functor: Functor[Tree]): Tree[B] =
+        functor.map(tree)(func)
     }
   }
 }
