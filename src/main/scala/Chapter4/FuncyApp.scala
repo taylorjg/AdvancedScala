@@ -2,7 +2,7 @@ package Chapter4
 
 import scala.language.higherKinds
 
-object Funcy extends App {
+object FuncyApp extends App {
 
   val someInt = Some(41)
   val noneInt = Option.empty[Int]
@@ -27,12 +27,13 @@ object Funcy extends App {
   }
 
   object MonadInstances {
-    implicit val optionMonad = new Monad[Option] {
+    implicit val optionMonad: Monad[Option] = new Monad[Option] {
       override def pure[A](a: A): Option[A] = Some(a)
-      override def flatMap[A, B](value: Option[A])(func: A => Option[B]): Option[B] =
+      override def flatMap[A, B](value: Option[A])(
+          func: A => Option[B]): Option[B] =
         value match {
           case Some(a) => func(a)
-          case None => None
+          case None    => None
         }
     }
   }
