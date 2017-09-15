@@ -29,6 +29,8 @@ object ShowYourWorkingApp extends App {
     val wans =
       if (n == 0) 1.pure[Logged]
       else factorialWriter(n - 1).map(n * _)
-    wans.flatMap(ans => ans.writer(Vector(s"fact $n $ans")))
+    wans
+      .map(slowly(_))
+      .flatMap(ans => Vector(s"fact $n $ans").tell.map(_ => ans))
   }
 }
