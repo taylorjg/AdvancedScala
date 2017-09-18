@@ -1,6 +1,7 @@
 package Chapter4
 
 import cats.data.Reader
+import cats.syntax.applicative._
 
 object HackingReadersApp extends App {
 
@@ -42,6 +43,6 @@ object HackingReadersApp extends App {
   ): DbReader[Boolean] =
     findUsername(userId).flatMap {
       case (Some(username)) => checkPassword(username, password)
-      case None             => Reader(_ => false)
+      case None             => false.pure[DbReader]
     }
 }
