@@ -14,6 +14,13 @@ object PostOrderCalculatorApp extends App {
   val program2 = evalAll(List("1", "2", "+", "3", "*"))
   println(s"program2: ${program2.run(Nil).value}")
 
+  val program3 = for {
+    _   <- evalAll(List("1", "2", "+"))
+    _   <- evalAll(List("3", "4", "+"))
+    result <- evalOne("*")
+  } yield result
+  println(s"program3: ${program3.run(Nil).value}")
+
   type CalcState[A] = State[List[Int], A]
 
   private def evalAll(input: List[String]): CalcState[Int] =
