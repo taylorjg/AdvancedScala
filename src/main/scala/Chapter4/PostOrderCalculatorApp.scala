@@ -4,37 +4,44 @@ import cats.data.State
 
 object PostOrderCalculatorApp extends App {
 
-  val stateMonad = for {
-    _ <- evalOne("1")
+  val program1 = for {
+    _ <- evalOne("10")
     _ <- evalOne("2")
-    result <- evalOne("+")
+    result <- evalOne("-")
   } yield result
+  println(s"program1: ${program1.run(Nil).value}")
 
-  println(s"12+: ${stateMonad.run(List.empty).value}")
+  val program2 = evalAll(List("1", "2", "+", "3", "*"))
+  println(s"program2: ${program2.run(Nil).value}")
 
   type CalcState[A] = State[List[Int], A]
 
+  private def evalAll(input: List[String]): CalcState[Int] =
+    input match {
+      case hd :: Nil => evalOne(hd)
+      case hd :: tl => evalOne(hd).flatMap(_ => evalAll(tl))
+      case _ =>
+        State[List[Int], Int] { oldStack =>
+          (oldStack, 0)
+        }
+    }
+
   private def evalOne(sym: String): CalcState[Int] = {
-    State[List[Int], Int] {
-      oldStack =>
-        def op(f: (Int, Int) => Int): Int = {
-          val n1 = oldStack.head
-          val n2 = oldStack(1)
-          f(n1, n2)
-        }
-        sym match {
-          case "+" =>
-            (oldStack.drop(2), op(_ + _))
-          case "-" =>
-            (oldStack.drop(2), op(_ - _))
-          case "*" =>
-            (oldStack.drop(2), op(_ * _))
-          case "/" =>
-            (oldStack.drop(2), op(_ / _))
-          case _ =>
-            val n = sym.toInt
-            (oldStack :+ n, n)
-        }
+    State[List[Int], Int] { oldStack =>
+      def op(f: (Int, Int) => Int): (List[Int], Int) = {
+        val (n2 :: n1 :: rest) = oldStack
+        val r = f(n1, n2)
+        (r :: rest, r)
+      }
+      sym match {
+        case "+" => op(_ + _)
+        case "-" => op(_ - _)
+        case "*" => op(_ * _)
+        case "/" => op(_ / _)
+        case _ =>
+          val r = sym.toInt
+          (r :: oldStack, r)
+      }
     }
   }
 }
