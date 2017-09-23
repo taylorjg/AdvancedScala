@@ -40,7 +40,7 @@ object TransformAndRollOutApp extends App {
       case Some(powerLevel) =>
         powerLevel.pure[Response]
       case None =>
-        EitherT.left[Int](Future(s"Failed to find power level for $autobot"))
+        EitherT.left(Future(s"$autobot unreachable"))
     }
 
   private def canSpecialMove(
@@ -55,19 +55,10 @@ object TransformAndRollOutApp extends App {
   private def tacticalReport(
       ally1: String,
       ally2: String
-  ): String = {
-    val v1 = canSpecialMove(ally1, ally2)
-    val v2 = v1.value
-    val v3 = v2.map { e =>
-      e.map(b =>
-        if (b) s"$ally1 and $ally2 are ready to roll out!"
-        else s"$ally1 and $ally2 need a recharge.")
+  ): String =
+    Await.result(canSpecialMove(ally1, ally2).value, 1.second) match {
+      case Left(msg)    => s"comms error: $msg"
+      case Right(true)  => s"$ally1 and $ally2 are ready to roll out!"
+      case Right(false) => s"$ally1 and $ally2 need a recharge."
     }
-    val v4 = Await.result(v3, 1.second)
-    val v5 = v4 match {
-      case Left(s) => s
-      case Right(s) => s
-    }
-    v5
-  }
 }
