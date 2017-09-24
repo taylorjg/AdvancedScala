@@ -58,10 +58,8 @@ object FormValidationApp extends App {
   private def validate(formData: FormData, label: String): Unit = {
     val validatedName = readName(formData).toValidated
     val validatedAge = readAge(formData).toValidated
-    val validatedUser =
-      Cartesian[ValidatedErrorsOr].product(validatedName, validatedAge) map {
-        case (name, age) => User(name, age)
-      }
+    val validatedUser = Cartesian[ValidatedErrorsOr]
+      .product(validatedName, validatedAge) map User.tupled
     println(s"$label: $validatedUser")
   }
 
