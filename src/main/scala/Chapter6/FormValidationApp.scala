@@ -1,6 +1,6 @@
 package Chapter6
 
-import cats.Cartesian
+import cats.syntax.apply._
 import cats.data.Validated
 import cats.syntax.either._
 import cats.instances.list._
@@ -58,8 +58,7 @@ object FormValidationApp extends App {
   private def validate(formData: FormData, label: String): Unit = {
     val validatedName = readName(formData).toValidated
     val validatedAge = readAge(formData).toValidated
-    val validatedUser = Cartesian[ValidatedErrorsOr]
-      .product(validatedName, validatedAge) map User.tupled
+    val validatedUser = (validatedName, validatedAge).mapN(User)
     println(s"$label: $validatedUser")
   }
 
